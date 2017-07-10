@@ -9,7 +9,8 @@ namespace Fetcher.Twitter.CLI
 {
     internal class Program
     {
-        private static string _nginxPushStreamModuleUrl = ConfigurationManager.AppSettings["nginxPushStreamModuleUrl"];
+        private static readonly string _nginxPushStreamModuleUrl =
+            ConfigurationManager.AppSettings["nginxPushStreamModuleUrl"];
 
         private static void Main(string[] args)
         {
@@ -19,7 +20,7 @@ namespace Fetcher.Twitter.CLI
             IStreamingFetcher fetcher = new TwitterFetcher();
             //IStreamingFetcher fetcher = new FakeStreamingFetcher();
 
-            var sub = Decorate<string>(ConsoleLog, ToNginxPushStreamMod);
+            var sub = ActionExtensions.Decorate<string>(ConsoleLog, ToNginxPushStreamMod);
 
             Start(filter, fetcher, sub).Wait();
 
@@ -44,17 +45,6 @@ namespace Fetcher.Twitter.CLI
 
             client.PostAsync(_nginxPushStreamModuleUrl, new StringContent(text))
                 .ContinueWith(_ => client.Dispose());
-        }
-
-        private static Action<T> Decorate<T>(params Action<T>[] actions)
-        {
-            Action<T> result = x => { };
-            foreach (var action in actions)
-            {
-                var _r = result;
-                result = x => { _r(x); action(x); };
-            }
-            return result;
         }
     }
 }
