@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>WebSocket Example</title>
+</head>
+<body>
+    Board: <input type="text" id="boardname" value="test1" />
+    <button type="button" id="btnUpdate">Update</button>
+    <p>Messages:</p>
+    <div id="messages" style="width:800px;height:300px;overflow:scroll;"></div>
+
+    <script src="/js/pushstream.js" type="text/javascript" language="javascript" charset="utf-8"></script>
+    <script type="text/javascript" language="javascript" charset="utf-8">
+    // <![CDATA[
+    var boardname = document.getElementById('boardname');
+    var btnUpdate = document.getElementById('btnUpdate');
+    var messages = document.getElementById('messages');
+    var lastChannel = null;
+
+    btnUpdate.onclick = function() {
+	if(lastChannel) {
+	    pushstream.disconnect()
+            pushstream.removeChannel(lastChannel);
+	}
+	lastChannel = boardname.value;
+	pushstream.addChannel(lastChannel);
+	messages.innerHTML = '';
+	pushstream.connect()
+    }
+
+    function messageReceived(text, id, channel) {
+      messages.innerHTML += id + ': ' + text + '<br>';
+    };
+
+    var pushstream = new PushStream({
+      host: window.location.hostname,
+      port: window.location.port,
+      modes: "websocket"
+    });
+    pushstream.onmessage = messageReceived;
+
+    btnUpdate.click();
+    // ]]>
+    </script>
+</body>
+</html>
