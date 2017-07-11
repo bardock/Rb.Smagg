@@ -14,8 +14,12 @@ namespace Fetcher.Twitter.CLI
 
         private static void Main(string[] args)
         {
-            Console.Write("Tweets filter: ");
-            var filter = Console.ReadLine();
+            string filter = null;
+            while (string.IsNullOrWhiteSpace(filter))
+            {
+                Console.Write("Tweets filter: ");
+                filter = Console.ReadLine();
+            }
 
             IStreamingFetcher fetcher = new TwitterFetcher();
             //IStreamingFetcher fetcher = new FakeStreamingFetcher();
