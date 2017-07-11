@@ -15,7 +15,8 @@ namespace Fetcher.Twitter
         {
             return (await GetQuery(filter).ToObservableAsync())
                 .Select(x => (dynamic)JsonConvert.DeserializeObject(x.Content))
-                .Select(x => (string)x.text);
+                .Select(x => (string)x.text)
+                .Select(x => x.Replace("\n", "<br/>"));
         }
 
         private IQueryable<Streaming> GetQuery(string filter)
